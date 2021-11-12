@@ -8,7 +8,7 @@ $ make build
 
 ## Clean (Makefile)
 ```
-$ makje clean
+$ make clean
 ```
 
 ## Build (Native)
