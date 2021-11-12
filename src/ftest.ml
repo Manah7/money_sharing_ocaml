@@ -32,5 +32,3 @@ let () =
   let () = write_file outfile graph in
 
   ()
-
-(*test*)
