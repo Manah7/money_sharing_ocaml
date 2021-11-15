@@ -22,5 +22,6 @@ demo: build
 clean:
 	-rm -rf _build/
 	-rm ftest.native
-	-rm src/*.cmo
-	-rm src/*.cmi
+	-rm outfile
+	# -rm src/*.cmo
+	# -rm src/*.cmi
