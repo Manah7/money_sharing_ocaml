@@ -54,10 +54,10 @@ val n_iter_sorted: 'a graph -> (id -> unit) -> unit
 val n_fold: 'a graph -> ('b -> id -> 'b) -> 'b -> 'b
 
 
-(* Iter on all arcs (edges) *)
+(* Iter on all ARCS (edges) *)
 val e_iter: 'a graph -> (id -> id -> 'a -> unit) -> unit
 
-(* Fold on all arcs (edges) *)
+(* Fold on all ARCS (edges) *)
 val e_fold: 'a graph -> ('b -> id -> id -> 'a -> 'b) -> 'b -> 'b
 
 
