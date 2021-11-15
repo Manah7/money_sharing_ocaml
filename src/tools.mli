@@ -1,6 +1,6 @@
 open Graph
 
-(* Assert false is of type ∀α.α, so the type-checker is happy. *)
+(* Returns a new graph having the same nodes than gr, but no arc. *)
 val clone_nodes: 'a graph -> 'b graph
 
 (* Maps all ARCS of gr by function f. *)
