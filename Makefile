@@ -19,9 +19,14 @@ demo: build
 	@echo "\n==== RESULT ==== (content of outfile) \n"
 	@cat outfile
 
+image: build
+	@echo "\n==== IMAGE ====\n"
+	dot -Tsvg outfile > image.svg
+
 clean:
 	-rm -rf _build/
 	-rm ftest.native
 	-rm outfile
+	-rm image.svg
 	# -rm src/*.cmo
 	# -rm src/*.cmi

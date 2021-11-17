@@ -36,6 +36,6 @@ let () =
   let test3 = gmap (add_arc (gmap graph int_of_string) 3 1 100) string_of_int in
 
   (* Rewrite the graph that has been read. *)
-  let () = write_file outfile test3 in
+  let () = export outfile test3 in
 
 ()
