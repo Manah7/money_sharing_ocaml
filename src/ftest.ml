@@ -33,7 +33,9 @@ let () =
 
   let test2 = gmap graph (fun a -> a ^ "bla") in
 
+  let test3 = gmap (add_arc (gmap graph int_of_string) 3 1 45) string_of_int in
+
   (* Rewrite the graph that has been read. *)
-  let () = write_file outfile test2 in
+  let () = write_file outfile test3 in
 
 ()
