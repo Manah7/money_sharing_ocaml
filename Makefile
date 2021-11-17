@@ -19,7 +19,7 @@ demo: build
 	@echo "\n==== RESULT ==== (content of outfile) \n"
 	@cat outfile
 
-image: build
+image: demo
 	@echo "\n==== IMAGE ====\n"
 	dot -Tsvg outfile > image.svg
 
