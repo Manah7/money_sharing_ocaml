@@ -6,17 +6,31 @@ type path = string
 (* Format of text files:
    % This is a comment
 
-   % A node with its coordinates (which are not used).
-   n 88.8 209.7
-   n 408.9 183.0
+   % A node with its coordinates (which are not used), and its id.
+   n 88.8 209.7 0
+   n 408.9 183.0 1
 
-   % The first node has id 0, the next is 1, and so on.
+   % Edges: e source dest label id  (the edge id is not used).
+   e 3 1 11 0 
+   e 0 2 8 1
 
-   % Edges: e source dest label
-   e 3 1 11
-   e 0 2 8
+*)
 
- *)
+(* Compute arbitrary position for a node. Center is 300,300 *)
+let iof = int_of_float
+let foi = float_of_int
+
+let index_i id = iof (sqrt (foi id *. 1.1))
+
+let compute_x id = 20 + 180 * index_i id
+
+let compute_y id =
+  let i0 = index_i id in
+  let delta = id - (i0 * i0 * 10 / 11) in
+  let sgn = if delta mod 2 = 0 then -1 else 1 in
+
+  300 + sgn * (delta / 2) * 100
+  
 
 let write_file path graph =
 
@@ -27,11 +41,11 @@ let write_file path graph =
   fprintf ff "%% This is a graph.\n\n" ;
 
   (* Write all nodes (with fake coordinates) *)
-  n_iter_sorted graph (fun id -> fprintf ff "n %.1f 1.0\n" (float_of_int id)) ;
+  n_iter_sorted graph (fun id -> fprintf ff "n %d %d %d\n" (compute_x id) (compute_y id) id) ;
   fprintf ff "\n" ;
 
   (* Write all arcs *)
-  e_iter graph (fun id1 id2 lbl -> fprintf ff "e %d %d %s\n" id1 id2 lbl) ;
+  let _ = e_fold graph (fun count id1 id2 lbl -> fprintf ff "e %d %d %d %s\n" id1 id2 count lbl ; count + 1) 0 in
   
   fprintf ff "\n%% End of graph\n" ;
   
@@ -39,8 +53,8 @@ let write_file path graph =
   ()
 
 (* Reads a line with a node. *)
-let read_node id graph line =
-  try Scanf.sscanf line "n %f %f" (fun _ _ -> new_node graph id)
+let read_node graph line =
+  try Scanf.sscanf line "n %f %f %d" (fun _ _ id -> new_node graph id)
   with e ->
     Printf.printf "Cannot read node in line - %s:\n%s\n%!" (Printexc.to_string e) line ;
     failwith "from_file"
@@ -51,7 +65,7 @@ let ensure graph id = if node_exists graph id then graph else new_node graph id
 
 (* Reads a line with an arc. *)
 let read_arc graph line =
-  try Scanf.sscanf line "e %d %d %s"
+  try Scanf.sscanf line "e %d %d %_d %s@%%"
         (fun id1 id2 label -> new_arc (ensure (ensure graph id1) id2) id1 id2 label)
   with e ->
     Printf.printf "Cannot read arc in line - %s:\n%s\n%!" (Printexc.to_string e) line ;
@@ -68,33 +82,32 @@ let from_file path =
 
   let infile = open_in path in
 
-  (* Read all lines until end of file. 
-   * n is the current node counter. *)
-  let rec loop n graph =
+  (* Read all lines until end of file. *)
+  let rec loop graph =
     try
       let line = input_line infile in
 
       (* Remove leading and trailing spaces. *)
       let line = String.trim line in
 
-      let (n2, graph2) =
+      let graph2 =
         (* Ignore empty lines *)
-        if line = "" then (n, graph)
+        if line = "" then graph
 
         (* The first character of a line determines its content : n or e. *)
         else match line.[0] with
-          | 'n' -> (n+1, read_node n graph line)
-          | 'e' -> (n, read_arc graph line)
+          | 'n' -> read_node graph line
+          | 'e' -> read_arc graph line
 
           (* It should be a comment, otherwise we complain. *)
-          | _ -> (n, read_comment graph line)
+          | _ -> read_comment graph line
       in      
-      loop n2 graph2
+      loop graph2
 
     with End_of_file -> graph (* Done *)
   in
 
-  let final_graph = loop 0 empty_graph in
+  let final_graph = loop empty_graph in
   
   close_in infile ;
   final_graph
