@@ -13,6 +13,8 @@ type path = (id * id * vsarc) list
 type ff_graph = vsarc graph
 
 
+let graphe_ecart gr = gmap gr (fun (flow, capa) -> capa-flow)
+
 let write_file_path file_path pth flow = match pth with
     | Some path ->
         let ff = open_out file_path in
