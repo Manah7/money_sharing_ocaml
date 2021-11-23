@@ -23,10 +23,15 @@ image: demo
 	@echo "\n==== IMAGE ====\n"
 	dot -Tsvg outfile > image.svg
 
+test_path: demo
+	@echo "\n==== TEST PATH ====\n"
+	@cat outfile_ff
+
 clean:
 	-rm -rf _build/
 	-rm ftest.native
 	-rm outfile
+	-rm outfile_ff
 	-rm image.svg
 	# -rm src/*.cmo
 	# -rm src/*.cmi

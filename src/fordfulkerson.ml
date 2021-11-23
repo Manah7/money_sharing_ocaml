@@ -13,36 +13,57 @@ type path = (id * id * vsarc) list
 type ff_graph = vsarc graph
 
 
-let write_file_path file_path path flow =
-    let ff = open_out file_path in
-        List.iter (fun (id1, id2, (flowloc, capa))-> fprintf ff "%d -(%d / %d)-> " id1 flowloc capa) path;
-        fprintf ff "\n\nFlow total = %d\n" flow;
-        close_out ff;
-        ()
+let write_file_path file_path pth flow = match pth with
+    | Some path ->
+        let ff = open_out file_path in
+            List.iter (fun (id1, id2, (flowloc, capa))-> fprintf ff "%d ---(%d/%d)---> %d, " id1 flowloc capa id2) path;
+            fprintf ff "\n\nFlow total = %d\n" flow;
+            close_out ff;
+            ()
+    | None -> 
+        let ff = open_out file_path in
+            fprintf ff "\nNo path found.\n";
+            close_out ff;
+            ()
 
 (* Take a int graph and return a ff graph *)
 let init_f_graph gr = gmap gr (fun x -> (0,x))
 
 (* Return path's flow *)
-let path_flow pth = List.fold_left (fun x (_,_,(flow,_))-> x + flow) 0 pth
+let path_flow = function 
+    | Some pth ->    List.fold_left (fun x (_,_,(flow,_))-> x + flow) 0 pth
+    | None -> -1
+
+let path_capa = function 
+    | Some pth ->    List.fold_left (fun x (_,_,(_,capa))-> x + capa) 0 pth
+    | None -> -1
+
+let rec flow_min path = match path with
+    | [] -> max_int
+    | (src, dst, (f,c))::rest -> if f < (flow_min rest) then f else (flow_min rest)
+
 
 (* Find and return a path between two node. Return None if all path are null *)
 (* TODO : Ajouter une condition d'arrêt et retourner liste node *)
 let rec find_path ffgr src dst marked = 
-    let arc_list = out_arcs ffgr src in
+    let arcs_sortants = out_arcs ffgr src in
     let rec explore arc_list = match arc_list with
         | [] -> None
-        | (id, (_, c))::rest -> 
+        | (d, (f, c))::_ when dst = d && c > 0 -> Some [(src, dst, (f, c))]
+        | (id, (f, c))::rest -> 
             let path = if (c > 0 && not (List.exists (fun x -> x = id) marked)) 
                         then find_path ffgr id dst (id::marked) 
                         else None 
             in
             match path with
                 | None -> explore rest
-                | _ -> path
+                | Some p -> Some ((src, id, (f, c))::p)
     in
-    explore arc_list
+    explore arcs_sortants
 
+
+(* Remove flow (int)from for each arc in path for ffgr *)
+let update_capa ffgr path flow = assert false
 
 (* 
     Ford Fulkerson steps:
@@ -52,16 +73,38 @@ let rec find_path ffgr src dst marked =
             d = min(flow(path.arc[*]))
             for all arc in path do
                 fl <- arc(d*sens)
-
 *)
-
-let test_ff gr src dst = assert false
+let ford_fulkerson gr src dst =
+    let ffgr = init_f_graph gr in
+    let update_gr ffgr = match find_path ffgr src dst [] with
+        | None -> ffgr
+        | Some p -> ffgr (* CRÉER UNE FONCTION UPDATE_GRAPH PATH *)
+    in
+    update_gr ffgr
 
 (*
-let test_ff gr src dst = let path = find_path (init_f_graph gr) src dst in
-    match path with
-        | None -> ()
-        | Some p -> write_file_path "./outfile_ff" p (path_flow p)
+
+let rec find_path ffgr src dst marked =
+    let arcs_sortants = out_arcs ffgr src in
+    let explore_arc idsrc = function
+        |(iddest,info)-> if iddest=dst &&
+            then Some [(idsrc,iddest,info)]
+            else 
+                if (List.exists (fun x -> x = iddest) marked) then None
+                else let suite = find_path iddest dst idsrc::marked in
+                    match suite with
+                        |None -> None
+                        |Some suiteChem-> Some (idsrc,iddest,info)::suiteChem
+        in
+    List.iter arcs_sortants 
+
+
 *)
+
+
+
+let test_ff gr src dst = let path = find_path (init_f_graph gr) 0 5 [] in
+    write_file_path "./outfile_ff" path (path_capa path)
+
 
 let flow_max gr = assert false

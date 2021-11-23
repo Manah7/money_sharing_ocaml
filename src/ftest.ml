@@ -30,13 +30,15 @@ let () =
   (* Open file *)
   let graph = from_file infile in
   
+  (*
   let test = clone_nodes graph in
 
   let test2 = gmap graph (fun a -> a ^ "bla") in
+  *)
 
   let test3 = gmap (add_arc (gmap graph int_of_string) 3 1 100) string_of_int in
 
-  (*let test4 = test_ff graph 1 4 in*)
+  test_ff (gmap graph int_of_string) 0 2; 
 
   (* Rewrite the graph that has been read. *)
   let () = export outfile test3 in
