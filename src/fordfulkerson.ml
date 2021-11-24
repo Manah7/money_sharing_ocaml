@@ -65,7 +65,10 @@ let rec find_path ffgr src dst marked =
 
 
 (* Remove flow (int)from for each arc in path for ffgr *)
-let update_capa ffgr path flow = assert false
+let rec update_flow ffgr path flow = match path with
+    |None -> ffgr
+    |Some [] -> ffgr
+    |Some ((id1,id2,_)::tail) -> update_flow (map_arc ffgr id1 id2 (fun (f,c) -> (f-flow,c))) (Some tail) flow
 
 (* 
     Ford Fulkerson steps:

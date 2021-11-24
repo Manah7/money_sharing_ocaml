@@ -13,3 +13,9 @@ let add_arc gr id1 id2 n =
     | Some a -> new_arc gr id1 id2 (a + n)
 
 
+let map_arc gr id1 id2 f=
+     let arc = find_arc gr id1 id2 in
+    match arc with
+    | None -> raise Not_found
+    | Some a -> new_arc gr id1 id2 (f a)
+
