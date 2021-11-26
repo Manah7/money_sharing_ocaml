@@ -36,11 +36,13 @@ let () =
   let test2 = gmap graph (fun a -> a ^ "bla") in
   *)
 
-  let test3 = gmap (add_arc (gmap graph int_of_string) 3 1 100) string_of_int in
+  (*let test3 = gmap (add_arc (gmap graph int_of_string) 3 1 100) string_of_int in*)
 
-  test_ff (gmap graph int_of_string) 0 2; 
+  let test4 = ford_fulkerson (gmap graph int_of_string) 0 5 in
+
+  (*test_ff (gmap graph int_of_string) 0 2; *)
 
   (* Rewrite the graph that has been read. *)
-  let () = export outfile test3 in
+  let () = export_ff outfile test4 in
 
 ()

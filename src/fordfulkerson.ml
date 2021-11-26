@@ -28,6 +28,9 @@ let write_file_path file_path pth flow = match pth with
             close_out ff;
             ()
 
+let print_path path = List.iter (fun (id1, id2, (flowloc, capa))-> Printf.printf "%d ---(%d/%d)---> %d, " id1 flowloc capa id2) path; Printf.printf "\n"
+    
+
 (* Take a int graph and return a ff graph *)
 let init_f_graph gr = gmap gr (fun x -> (0,x))
 
@@ -42,7 +45,7 @@ let path_capa = function
 
 let rec flow_min path = match path with
     | [] -> max_int
-    | (src, dst, (f,c))::rest -> if f < (flow_min rest) then f else (flow_min rest)
+    | (src, dst, (f,c))::rest -> if c < (flow_min rest) then c else (flow_min rest)
 
 
 (* Find and return a path between two node. Return None if all path are null *)
@@ -80,18 +83,17 @@ let rec update_capa ffgr path flow = match path with
 *)
 
 
-
 let ford_fulkerson gr src dst =
     let ffgr = init_f_graph gr in
-    let rec update_gr ffgr = match find_path ffgr src dst [] with
+    let rec update_gr ffgr = 
+    match find_path ffgr src dst [] with
         | None -> ffgr
-        | Some p -> update_gr (update_capa ffgr p (flow_min p))(* CRÉER UNE FONCTION UPDATE_GRAPH PATH *)
+        | Some p -> print_path p; Printf.printf "\nFlow min %d\n" (flow_min p); update_gr (update_capa ffgr p (flow_min p))(* CRÉER UNE FONCTION UPDATE_GRAPH PATH *)
     in
-    update_gr ffgr
+    gmap (update_gr ffgr) (fun (c,f)->(c,c+f)) 
 
 
 let test_ff gr src dst = let path = find_path (init_f_graph gr) 0 5 [] in
     write_file_path "./outfile_ff" path (path_capa path)
 
 
-let flow_max gr = assert false
