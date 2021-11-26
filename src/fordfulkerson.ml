@@ -65,10 +65,9 @@ let rec find_path ffgr src dst marked =
 
 
 (* Remove flow (int)from for each arc in path for ffgr *)
-let rec update_flow ffgr path flow = match path with
-    |None -> ffgr
-    |Some [] -> ffgr
-    |Some ((id1,id2,_)::tail) -> update_flow (map_arc ffgr id1 id2 (fun (f,c) -> (f-flow,c))) (Some tail) flow
+let rec update_capa ffgr path flow = match path with
+    | [] -> ffgr
+    |((id1,id2,_)::tail) -> update_capa (map_arc ffgr id1 id2 (fun (f,c) -> (f+flow,c-flow)))  tail flow
 
 (* 
     Ford Fulkerson steps:
@@ -79,33 +78,16 @@ let rec update_flow ffgr path flow = match path with
             for all arc in path do
                 fl <- arc(d*sens)
 *)
+
+
+
 let ford_fulkerson gr src dst =
     let ffgr = init_f_graph gr in
-    let update_gr ffgr = match find_path ffgr src dst [] with
+    let rec update_gr ffgr = match find_path ffgr src dst [] with
         | None -> ffgr
-        | Some p -> ffgr (* CRÉER UNE FONCTION UPDATE_GRAPH PATH *)
+        | Some p -> update_gr (update_capa ffgr p (flow_min p))(* CRÉER UNE FONCTION UPDATE_GRAPH PATH *)
     in
     update_gr ffgr
-
-(*
-
-let rec find_path ffgr src dst marked =
-    let arcs_sortants = out_arcs ffgr src in
-    let explore_arc idsrc = function
-        |(iddest,info)-> if iddest=dst &&
-            then Some [(idsrc,iddest,info)]
-            else 
-                if (List.exists (fun x -> x = iddest) marked) then None
-                else let suite = find_path iddest dst idsrc::marked in
-                    match suite with
-                        |None -> None
-                        |Some suiteChem-> Some (idsrc,iddest,info)::suiteChem
-        in
-    List.iter arcs_sortants 
-
-
-*)
-
 
 
 let test_ff gr src dst = let path = find_path (init_f_graph gr) 0 5 [] in
