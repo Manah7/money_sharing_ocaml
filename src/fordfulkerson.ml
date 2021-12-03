@@ -30,6 +30,7 @@ let write_file_path file_path pth flow = match pth with
 
 let print_path path = List.iter (fun (id1, id2, (flowloc, capa))-> Printf.printf "%d ---(%d/%d)---> %d, " id1 flowloc capa id2) path; Printf.printf "\n"
     
+let drop_zeros gr = e_fold gr (fun tgr id1 id2 (x,y)-> if x = 0 then tgr else new_arc tgr id1 id2 (x,y)) (clone_nodes gr)
 
 (* Take a int graph and return a ff graph *)
 let init_f_graph gr = gmap gr (fun x -> (0,x))
@@ -55,7 +56,7 @@ let rec find_path ffgr src dst marked =
     let rec explore arc_list = match arc_list with
         | [] -> None
         | (d, (f, c))::_ when dst = d && c > 0 -> Some [(src, dst, (f, c))]
-        | (id, (f, c))::rest -> 
+        | (id, (f, c))::rest -> (* AJOUTER ARC INVERSE LORS DE L'AFFECTATION *)
             let path = if (c > 0 && not (List.exists (fun x -> x = id) marked)) 
                         then find_path ffgr id dst (id::marked) 
                         else None 
@@ -70,7 +71,9 @@ let rec find_path ffgr src dst marked =
 (* Remove flow (int)from for each arc in path for ffgr *)
 let rec update_capa ffgr path flow = match path with
     | [] -> ffgr
-    |((id1,id2,_)::tail) -> update_capa (map_arc ffgr id1 id2 (fun (f,c) -> (f+flow,c-flow)))  tail flow
+    |((id1,id2,(f, c))::tail) -> update_capa (add_vsarc ffgr id1 id2 (flow,-flow)) tail flow
+
+    
 
 (* 
     Ford Fulkerson steps:
@@ -90,7 +93,7 @@ let ford_fulkerson gr src dst =
         | None -> ffgr
         | Some p -> print_path p; Printf.printf "\nFlow min %d\n" (flow_min p); update_gr (update_capa ffgr p (flow_min p))(* CRÉER UNE FONCTION UPDATE_GRAPH PATH *)
     in
-    gmap (update_gr ffgr) (fun (c,f)->(c,c+f)) 
+    drop_zeros (gmap (update_gr ffgr) (fun (c,f)->(c,c+f))) 
 
 
 let test_ff gr src dst = let path = find_path (init_f_graph gr) 0 5 [] in

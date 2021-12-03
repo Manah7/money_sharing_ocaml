@@ -38,7 +38,7 @@ let () =
 
   (*let test3 = gmap (add_arc (gmap graph int_of_string) 3 1 100) string_of_int in*)
 
-  let test4 = ford_fulkerson (gmap graph int_of_string) 0 5 in
+  let test4 = ford_fulkerson (gmap graph int_of_string) _source _sink in
 
   (*test_ff (gmap graph int_of_string) 0 2; *)
 

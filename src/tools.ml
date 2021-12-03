@@ -13,7 +13,17 @@ let add_arc gr id1 id2 n =
     | Some a -> new_arc gr id1 id2 (a + n)
 
 
-let map_arc gr id1 id2 f=
+let add_vsarc gr id1 id2 (f, c) = 
+    let arc = find_arc gr id1 id2 in
+    match arc with
+    | None -> new_arc gr id1 id2 (f, c)
+    | Some (fa, ca) -> 
+        let nc = ca + c in
+        let nf = fa + f in
+        new_arc (new_arc gr id2 id1 (nc, nf)) id1 id2 (nf, nc)
+
+
+let map_arc gr id1 id2 f =
      let arc = find_arc gr id1 id2 in
     match arc with
     | None -> raise Not_found
