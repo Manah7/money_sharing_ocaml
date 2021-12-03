@@ -63,7 +63,7 @@ let export path graph =
 let export_ff path graph = 
   let ff = open_out path in 
   fprintf ff "digraph finite_state_machine {\n	rankdir=LR;\nnode [shape = circle];\n";
-  e_iter graph (fun id1 id2 (flow,capa,_) -> fprintf ff "%d -> %d  [label=\"(%d/%d)\"];\n" id1 id2 flow capa);
+  e_iter graph (fun id1 id2 (flow,capa) -> fprintf ff "%d -> %d  [label=\"(%d/%d)\"];\n" id1 id2 flow capa);
   fprintf ff "}\n";
   close_out ff ;
   ()

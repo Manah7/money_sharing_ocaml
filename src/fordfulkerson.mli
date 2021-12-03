@@ -4,7 +4,7 @@ type flow = int
 
 type capa = int
 
-type vsarc = (flow * capa * bool)
+type vsarc = (flow * capa)
 
 val test_ff : int graph -> id -> id -> unit
 
