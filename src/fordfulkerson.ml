@@ -73,18 +73,6 @@ let rec update_capa ffgr path flow = match path with
     | [] -> ffgr
     |((id1,id2,(f, c))::tail) -> update_capa (add_vsarc ffgr id1 id2 (flow,-flow)) tail flow
 
-    
-
-(* 
-    Ford Fulkerson steps:
-        Init:
-            fl <- Null
-        While Exist(Path / flow(Path) != 0) do
-            d = min(flow(path.arc[*]))
-            for all arc in path do
-                fl <- arc(d*sens)
-*)
-
 
 let drop_return_arcs gr gri = e_fold gr (fun grf id1 id2 (f,c)->if find_arc gri id1 id2 = None then grf else new_arc grf id1 id2 (f,c)) (clone_nodes gr)
 
@@ -96,8 +84,6 @@ let ford_fulkerson gr src dst =
         | Some p -> print_path p; Printf.printf "\nFlow min %d\n" (flow_min p); update_gr (update_capa ffgr p (flow_min p))(* CRÉER UNE FONCTION UPDATE_GRAPH PATH *)
     in
     drop_return_arcs (gmap (update_gr ffgr) (fun (c,f)->(c,c+f))) gr
-(*     e_fold (gmap (update_gr ffgr) (fun (c,f, r)->(c,c+f, r))) (fun grf id1 id2 (f,c,r)->if r then grf else new_arc grf id1 id2 (f,c,r)) (clone_nodes gr)
- *)
 
 let test_ff gr src dst = let path = find_path (init_f_graph gr) 0 5 [] in
     write_file_path "./outfile_ff" path (path_capa path)

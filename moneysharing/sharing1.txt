@@ -1,0 +1,5 @@
+% Demo 1
+p alice 50.0
+p bob 30.0
+p carol 15.0
+p dan 5.5

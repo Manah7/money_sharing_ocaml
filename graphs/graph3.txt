@@ -1,4 +1,6 @@
-% This is a graph.
+% This graph does not respect Ford-Fulkerson hypothesis
+% (We assume that there are no anti-parallel arcs, i.e. 
+% there are no arcs from u to v and from v to u. )
 
 n 20 300 0
 n 200 300 1
