@@ -58,6 +58,6 @@ clean:
 	-rm ftest.native
 	-rm outfile
 	-rm outfile_ff
-	-rm image.svg
+	-rm *.svg
 	# -rm src/*.cmo
 	# -rm src/*.cmi
