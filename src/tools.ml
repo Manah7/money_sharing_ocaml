@@ -2,7 +2,7 @@ open Graph
 
 let clone_nodes gr = n_fold gr new_node empty_graph
 
-(* Take an arc-empty copie and create new arcs with mapped function. (fun . -> .) + fold 
+(* Take an arc-empty copy and create new arcs with mapped function. (fun . -> .) + fold 
  iterate on all arc *)
 let gmap gr f = e_fold gr (fun tgr id1 id2 n -> new_arc tgr id1 id2 (f n)) (clone_nodes gr)
 

@@ -21,8 +21,13 @@ let rec sum_amount ul = match ul with
   | [] -> 0.0
   | (_, a)::rest -> a +. (sum_amount rest)
 
-let complete_graph gr = (* TODO *)
-  let loop node = assert false in assert false
+(* Add every possible outgoing arc from one given node with label lbl *)
+let add_all_arcs_from_node gr id lbl = 
+    n_fold gr (fun tgr id2 -> new_arc tgr id id2 lbl) gr
+
+(* Make a given graph complete by adding all possible outgoing arcs for every node *)
+let complete_graph gr lbl = 
+    n_fold gr (fun tgr id -> add_all_arcs_from_node tgr id lbl) gr
 
 
 (* Based on from_file() (gfile.ml) *)
@@ -58,7 +63,6 @@ let rec get_graph_from_file path =
           | _ -> read_comment graph line
       in
 
-      (* If there is a new user, we increment the user count *)
       loop graph2 ul2
 
     with End_of_file -> (graph, ul) (* Done *)
@@ -70,10 +74,32 @@ let rec get_graph_from_file path =
   (* Adding arcs depending on the total amount*)
   let make_final_graph data = match data with
     | (gr, ul) -> 
+      (* Calculation of total amount *)
       let total = sum_amount ul in
-      assert false
+      (* Calculation of user part *)
+      let user_part = total /. (float_of_int (List.length ul)) in
+      (* Adding infinte capacity arc to graph *)
+      let fgr = complete_graph gr total in
+      (* Add source and sink nodes *)
+      let src_id = (List.length ul)+2 in
+      let snk_id = (List.length ul)+1 in
+      let ffgr = new_node (new_node fgr src_id) snk_id in
+      (* Looping on user list to add outward arcs *)
+      let rec ul_loop gr ul n = match ul with
+        | [] -> gr
+        | (name, a)::rest -> 
+            let diff = a -. user_part in
+            if diff > 0.0 then ul_loop (new_arc gr n snk_id diff) rest (n+1)
+            else ul_loop (new_arc gr n src_id (0.0 -. diff)) rest (n+1)
+      in ul_loop ffgr ul 0
 
-  in (* let ffgr = *) make_final_graph data
+  in make_final_graph data
+
+(** TODO: terminer la fonction au dessus
+    ajouter les arcs infinis
+    ajouter les arcs d'entrée sortie
+    cf. https://hackernoon.com/max-flow-algorithm-in-real-life-551ebd781b25
+ *)
 
 let share_from_file path = 
   let gr = get_graph_from_file path in
