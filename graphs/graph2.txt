@@ -1,4 +1,5 @@
 % This is a graph.
+% Oracle: https://algorithms.discrete.ma.tum.de/graph-algorithms/flow-ford-fulkerson/index_en.html
 
 n 20 300 0
 n 200 300 1

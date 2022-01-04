@@ -19,3 +19,5 @@ val export: path -> string graph -> unit
 *)
 
 val export_ff: path -> vsarc graph -> unit
+
+val export_ff_f: path -> vsarc_f graph -> unit

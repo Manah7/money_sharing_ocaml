@@ -23,11 +23,11 @@ let rec sum_amount ul = match ul with
 
 (* Add every possible outgoing arc from one given node with label lbl *)
 let add_all_arcs_from_node gr id lbl = 
-    n_fold gr (fun tgr id2 -> if id != id2 then new_arc tgr id id2 lbl else tgr) gr
+  n_fold gr (fun tgr id2 -> if id != id2 then new_arc tgr id id2 lbl else tgr) gr
 
 (* Make a given graph complete by adding all possible outgoing arcs for every node *)
 let complete_graph gr lbl = 
-    n_fold gr (fun tgr id -> add_all_arcs_from_node tgr id lbl) gr
+  n_fold gr (fun tgr id -> add_all_arcs_from_node tgr id lbl) gr
 
 
 (* Based on from_file() (gfile.ml) *)
@@ -59,7 +59,7 @@ let rec get_graph_from_file path =
         if line = "" then graph
 
         else match line.[0] with
-          | 'p' -> new_node graph (List.length ul2)
+          | 'p' -> new_node graph ((List.length ul2) + 1)
           | _ -> read_comment graph line
       in
 
@@ -81,26 +81,32 @@ let rec get_graph_from_file path =
       (* Adding infinte capacity arc to graph *)
       let fgr = complete_graph gr total in
       (* Add source and sink nodes *)
-      let src_id = (List.length ul)+2 in
-      let snk_id = (List.length ul)+1 in
+      let src_id = 0 in
+      let snk_id = 1 in
       let ffgr = new_node (new_node fgr src_id) snk_id in
       (* Looping on user list to add outward arcs *)
       let rec ul_loop gr ul n = match ul with
         | [] -> gr
         | (name, a)::rest -> 
-            let diff = a -. user_part in
-            if diff > 0.0 then ul_loop (new_arc gr n snk_id diff) rest (n+1)
-            else ul_loop (new_arc gr n src_id (0.0 -. diff)) rest (n+1)
-      in ul_loop ffgr ul 1
+          let diff = a -. user_part in
+          if diff > 0.0 then ul_loop (new_arc gr n snk_id diff) rest (n+1)
+          else ul_loop (new_arc gr src_id n (0.0 -. diff)) rest (n+1)
+      in ul_loop ffgr ul 2
 
   in make_final_graph data
 
 (** TODO:
     - Appliquer ff sur le graphe obtenu
     - Extraire et afficher les résultats
-    cf. https://hackernoon.com/max-flow-algorithm-in-real-life-551ebd781b25
- *)
+      cf. https://hackernoon.com/max-flow-algorithm-in-real-life-551ebd781b25
+*)
 
 let share_from_file in_path out_path = 
+  (* Building graph from file *)
   let gr = get_graph_from_file in_path in
-  export out_path (gmap gr string_of_float)
+
+  (* Applying ford fulkerson *)
+  let src_id = 0 in
+  let snk_id = 1 in
+  let ffgr = ford_fulkerson_f gr src_id snk_id in
+  export_ff_f out_path ffgr

@@ -27,6 +27,19 @@ test_path: demo
 	@echo "\n==== TEST PATH ====\n"
 	@cat outfile_ff
 
+float: 
+	@echo "\n==== COMPILING ====\n"
+	ocamlbuild floattest.native
+
+	@echo "\n==== EXECUTING ====\n"
+	./floattest.native graphs/float2.txt 0 12 outfile
+
+	@echo "\n==== RESULT ==== (content of outfile) \n"
+	@cat outfile
+
+	@echo "\n==== IMAGE ====\n"
+	dot -Tsvg outfile > image.svg
+
 share:
 	@echo "\n==== COMPILING ====\n"
 	ocamlbuild sharingtest.native
