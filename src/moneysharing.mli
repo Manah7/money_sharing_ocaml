@@ -1,3 +1,3 @@
-type path = string
+open Gfile
 
-val share_from_file: path -> unit
+val share_from_file: path -> path -> unit

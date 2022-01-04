@@ -23,7 +23,7 @@ let rec sum_amount ul = match ul with
 
 (* Add every possible outgoing arc from one given node with label lbl *)
 let add_all_arcs_from_node gr id lbl = 
-    n_fold gr (fun tgr id2 -> new_arc tgr id id2 lbl) gr
+    n_fold gr (fun tgr id2 -> if id != id2 then new_arc tgr id id2 lbl else tgr) gr
 
 (* Make a given graph complete by adding all possible outgoing arcs for every node *)
 let complete_graph gr lbl = 
@@ -91,16 +91,16 @@ let rec get_graph_from_file path =
             let diff = a -. user_part in
             if diff > 0.0 then ul_loop (new_arc gr n snk_id diff) rest (n+1)
             else ul_loop (new_arc gr n src_id (0.0 -. diff)) rest (n+1)
-      in ul_loop ffgr ul 0
+      in ul_loop ffgr ul 1
 
   in make_final_graph data
 
-(** TODO: terminer la fonction au dessus
-    ajouter les arcs infinis
-    ajouter les arcs d'entrée sortie
+(** TODO:
+    - Appliquer ff sur le graphe obtenu
+    - Extraire et afficher les résultats
     cf. https://hackernoon.com/max-flow-algorithm-in-real-life-551ebd781b25
  *)
 
-let share_from_file path = 
-  let gr = get_graph_from_file path in
-  assert false
+let share_from_file in_path out_path = 
+  let gr = get_graph_from_file in_path in
+  export out_path (gmap gr string_of_float)

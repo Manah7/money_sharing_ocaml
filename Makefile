@@ -27,6 +27,19 @@ test_path: demo
 	@echo "\n==== TEST PATH ====\n"
 	@cat outfile_ff
 
+share:
+	@echo "\n==== COMPILING ====\n"
+	ocamlbuild sharingtest.native
+
+	@echo "\n==== EXECUTING ====\n"
+	./sharingtest.native moneysharing/sharing1.txt outfile
+
+	@echo "\n==== RESULT ==== (content of outfile) \n"
+	@cat outfile
+
+	@echo "\n==== IMAGE ====\n"
+	dot -Tsvg outfile > image.svg
+
 clean:
 	-rm -rf _build/
 	-rm ftest.native
