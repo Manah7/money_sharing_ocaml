@@ -1,26 +1,25 @@
-# Projet OCaml
-Répertoire de travail pour le projet d'OCaml de 4IR.
+# OCaml project (I4IRIF11)
+Working directory for the 4IR OCaml project. This project was carried out in the fall of 2021 as part of the fundamental computer science course and consists of the implementation of a Ford Fulkerson algorithm in Ocaml (functional programming).  
 
-## Build (Makefile)
-```
-$ make build
-```
+## Project progress 
+* Minimal acceptable project: **done** (run `make demo`)
+* Medium project: *adjustment needed* (run `make share`)
+* Better project: *under implementation*
 
-## Clean (Makefile)
+## Quick start 
 ```
-$ make clean
-```
-
-## Build (Native)
-```
-$ cd src/
-$ ocamlbuild ftest.native
+git clone https://github.com/Manah7/projet_ocaml
+cd projet_ocaml
+make image
+eog image.svg
 ```
 
-## Clean (Native)
+## Makefile
 ```
-$ cd src/
-$ rm _build ftest.native -rf
+make build  # build the project
+make image  # build and run a demo, saved as image.svg
+make share  # build and run money sharing demo using FF. algo.
 ```
 
-
+## About
+Contact & more: [https://manah.fr](https://manah.fr)
