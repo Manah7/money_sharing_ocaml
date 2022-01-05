@@ -63,7 +63,7 @@ let rec old_find_path ffgr src dst marked =
   in
   explore arcs_sortants
 
-(* Dijkstra version of find_path() *)
+(* Dijkstra version of find_path() - negative_threshold is for polymorphism *)
 let find_path ffgr src dst negative_threshold  = 
   (* A list of marked nodes - init with src *)
   let marked = [src] in

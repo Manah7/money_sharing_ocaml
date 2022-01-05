@@ -123,7 +123,7 @@ let get_debts fgr ul name id =
     | [] -> ()
     | (id2, name, amn)::rest -> match find_arc fgr id2 id with
       | None -> loop rest 
-      | Some (f, _) ->  Printf.printf "%s doit %.2f à %s\n" name f (get_name ul id); loop rest
+      | Some (f, _) ->  Printf.printf "%s owes %.2f to %s\n" name f (get_name ul id); loop rest
   in loop ul
 
 let rec print_ul ul = match ul with

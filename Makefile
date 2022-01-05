@@ -47,7 +47,7 @@ share:
 	@echo "\n==== EXECUTING ====\n"
 	./sharingtest.native moneysharing/sharing2.txt outfile
 
-	@echo "Created image."
+	@echo "\nCreated image."
 	dot -Tsvg outfile > image.svg
 
 clean:
