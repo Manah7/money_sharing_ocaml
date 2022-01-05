@@ -30,8 +30,6 @@ let write_file_path file_path pth flow = match pth with
 
 let print_path path = List.iter (fun (id1, id2, (flowloc, capa))-> Printf.printf "%d ---(%d/%d)---> %d, " id1 flowloc capa id2) path; Printf.printf "\n"
 
-let drop_zeros gr = e_fold gr (fun tgr id1 id2 (x,y)-> if x = 0 then tgr else new_arc tgr id1 id2 (x,y)) (clone_nodes gr)
-
 (* Take a int graph and return a ff graph *)
 let init_f_graph gr = gmap gr (fun x -> (0,x))
 

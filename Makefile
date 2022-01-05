@@ -45,12 +45,9 @@ share:
 	ocamlbuild sharingtest.native
 
 	@echo "\n==== EXECUTING ====\n"
-	./sharingtest.native moneysharing/sharing1.txt outfile
+	./sharingtest.native moneysharing/sharing2.txt outfile
 
-	@echo "\n==== RESULT ==== (content of outfile) \n"
-	@cat outfile
-
-	@echo "\n==== IMAGE ====\n"
+	@echo "Created image."
 	dot -Tsvg outfile > image.svg
 
 clean:

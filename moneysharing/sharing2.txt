@@ -1,0 +1,22 @@
+
+% This is another file to test our programming
+
+
+
+
+
+
+
+
+
+
+p Vitalstatistix 30.0
+
+p Impedimenta 45.6
+
+p Unhygenix 0.0
+p Fulliautomatix 7.8
+
+% Hum, this is a commmentary
+
+p Picanmix 0.1
