@@ -38,6 +38,8 @@ let rec get_total_part = function
   | s::r -> if s = "" then get_total_part r else (int_of_string s)+(get_total_part r)
 
 
+
+
 let rec get_info_from_csv path = 
   let infile = open_in path in
 
@@ -47,7 +49,7 @@ let rec get_info_from_csv path =
       let line = String.trim (input_line infile) in
 
       (* We parse the first line to extract users (and we create ids) *)
-      let line_split = Str.split (Str.regexp ",") line in
+      let line_split = String.split_on_char ',' line in
       match line_split with
       (* Skipping first two columns *)
       | whopaid::howmuch::name_list -> 
@@ -65,7 +67,7 @@ let rec get_info_from_csv path =
   let rec loop ul =
     try
       let line = String.trim (input_line infile) in
-      let line_split = Str.split (Str.regexp ",") line in
+      let line_split = String.split_on_char ',' line in
 
       let rec loop_line ul = function
         (* Getting payer and amount *)
@@ -103,7 +105,9 @@ let rec get_info_from_csv path =
 
   let ul_with_amount = loop ul in
 
-  (empty_graph, ul)
+  (empty_graph, ul_with_amount)
+
+  (* TODO : parse ul and add mssing arcs *)
 
 (**********************************************)
 

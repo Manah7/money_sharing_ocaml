@@ -10,11 +10,10 @@ let () =
     begin
       Printf.printf
         "\n ✻  Usage: %s infile source sink outfile\n\n%s%!" Sys.argv.(0)
-        ("    🟄  infile  : input file containing payments list (cf. readme) \n" ^
+        ("    🟄  infile  : input CSV file containing payments description\n" ^
          "    🟄  outfile : output file in which the result should be written (debug purposes)\n\n") ;
       exit 0
     end ;
-
 
   (* Arguments are : infile(1) outfile(2) *)
   
@@ -22,7 +21,6 @@ let () =
   and outfile = Sys.argv.(2)
   in
 
-  let () = share_from_file infile outfile in
-
+  let () = share_from_csv infile outfile in
 
 ()

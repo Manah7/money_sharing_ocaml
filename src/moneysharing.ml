@@ -131,9 +131,9 @@ let rec print_ul ul = match ul with
   | [] -> Printf.printf "\n"
   | (id, name, _)::rest -> (* Printf.printf "%d: %s (recorded: %s)\n" id (get_name ul id) name; *) print_ul rest
 
-let share_from_file in_path out_path = 
+let share_from_info info out_path = 
   (* Building graph from file and getting user_part as tshd *)
-  match get_info_from_file in_path with
+  match info with
   | (gr, ul) ->
     (* (re)calculing tshd *)
     let tshd = (sum_amount ul) /. (float_of_int (List.length ul)) in
@@ -155,3 +155,9 @@ let share_from_file in_path out_path =
       if id < 2 then ()
       else get_debts final_gr ul name id
     ) ul
+
+let share_from_file in_path out_path =
+  share_from_info (get_info_from_file in_path) out_path
+
+let share_from_csv in_path out_path =
+  share_from_info (get_info_from_csv in_path) out_path
