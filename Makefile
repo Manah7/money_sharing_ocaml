@@ -56,5 +56,6 @@ clean:
 	-rm outfile
 	-rm outfile_ff
 	-rm *.svg
+	-rm example.csv
 	# -rm src/*.cmo
 	# -rm src/*.cmi

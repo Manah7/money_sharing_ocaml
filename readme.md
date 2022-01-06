@@ -6,7 +6,7 @@ Working directory for the 4IR OCaml project. This project was carried out in the
 * Medium project (Money sharing): **done** (run `make share`)
 * Better project: 
   * Max-flow min-cost: **done** (see `find_path` in `fordfulkerson.ml`)
-  * Enhance the medium project: *work in progress*
+  * Enhance the medium project: *work in progress* (CSV parsing + addition of repartition possibilities)
 
 ## Medium project
 We have chosen to implement the money sharing project. The implementation has been carried out and the demonstrator takes as input a processing file: 
