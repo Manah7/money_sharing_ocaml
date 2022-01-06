@@ -7,12 +7,6 @@ symbols:
 	@echo "\n==== SYMBOLS ====\n"
 	cd src/ && ocamlc -c graph.mli graph.ml gfile.mli gfile.ml && cd ..
 
-format:
-	ocp-indent --inplace src/*
-
-edit:
-	code . -n
-
 demo: build
 	@echo "\n==== EXECUTING ====\n"
 	./ftest.native graphs/graph2.txt 0 12 outfile
@@ -55,7 +49,7 @@ csvtest:
 	ocamlbuild csvtest.native
 
 	@echo "\n==== EXECUTING ====\n"
-	./csvtest.native example.csv outfile
+	./csvtest.native moneysharing/sharing4.csv outfile
 
 	@echo "\nCreated image."
 	dot -Tsvg outfile > image.svg
@@ -67,5 +61,5 @@ clean:
 	-rm outfile_ff
 	-rm *.svg
 	-rm example.csv
-	# -rm src/*.cmo
-	# -rm src/*.cmi
+	-rm src/*.cmo
+	-rm src/*.cmi

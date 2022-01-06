@@ -49,11 +49,13 @@ let rec get_total_part = function
 
 let rec create_graph_from_ul = function
   | [] -> empty_graph
-  | (id, _, _)::rest -> new_node (create_graph_from_ul rest) id
+  | (id, name, _)::rest -> Printf.printf "[debug] Created a node for %s (id: %d)\n" name id;
+    new_node (create_graph_from_ul rest) id
 
+(* Print a given user list - useful for debug *)
 let rec print_ul = function
-  | [] -> Printf.printf "[ul] Done.\n"
-  | (id, name, a)::rest -> Printf.printf "[ul] id: %d, name: %s, a: %.2f\n" id name a; print_ul rest
+  | [] -> Printf.printf "[info] Done.\n"
+  | (id, name, a)::rest -> Printf.printf "[info] Name: %s, credit: %.2f\n" name a; print_ul rest
 
 let rec get_info_from_csv path = 
   let infile = open_in path in
@@ -137,11 +139,11 @@ let rec get_info_from_csv path =
   let rec ul_loop gr ul n = match ul with
     | [] -> gr
     | (_, name, a)::rest -> 
-      if a > 0.0 then ul_loop (new_arc gr n snk_id a) rest (n-1)
-      else ul_loop (new_arc gr src_id n (0.0 -. a)) rest (n-1)
+      if a > 0.0 then ul_loop (new_arc gr n snk_id a) rest (n+1)
+      else ul_loop (new_arc gr src_id n (0.0 -. a)) rest (n+1)
   in 
   
-  (ul_loop fgr ul_with_amount ((List.length ul_with_amount)+1), ul_with_amount)
+  (ul_loop fgr ul_with_amount 2, ul_with_amount)
 
 
 (**

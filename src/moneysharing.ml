@@ -20,7 +20,7 @@ let read_comment th line =
 
 let rec sum_amount ul = match ul with
   | [] -> 0.0
-  | (_, _, a)::rest -> a +. (sum_amount rest)
+  | (_, _, a)::rest -> (abs_float a) +. (sum_amount rest)
 
 
 (* Based on from_file() (gfile.ml) *)
@@ -78,7 +78,7 @@ let rec get_info_from_file path =
       Printf.printf "Part of each user: %.2f\n" user_part;
 
       (* Adding infinte capacity arc to graph *)
-      let fgr = complete_graph gr total in
+      let fgr = complete_graph gr Float.infinity in
 
       (* Add source and sink nodes *)
       let src_id = 0 in
@@ -93,14 +93,14 @@ let rec get_info_from_file path =
           (* Printf.printf "[Debug] User: %s, amount: %.2f, diff: %.2f, n: %d\n" name a diff n; *)
           if diff > 0.0 then ul_loop (new_arc gr n snk_id diff) rest (n-1)
           else ul_loop (new_arc gr src_id n (0.0 -. diff)) rest (n-1)
-      
+
       (* We add user_part in order to determine which arcs is useful *)
       in (ul_loop ffgr ul ((List.length ul)+1), ul)
 
   in make_final_graph data
 
 
-let drop_threshold gr tshd = e_fold gr (fun tgr id1 id2 (x,y)-> if x = 0.0 || x > tshd then tgr else new_arc tgr id1 id2 (x,y)) (clone_nodes gr)
+let drop_threshold gr tshd = e_fold gr (fun tgr id1 id2 (x,y)-> if x = 0.0 || x = Float.infinity then tgr else new_arc tgr id1 id2 (x,y)) (clone_nodes gr)
 
 let rec get_name_opt ul id = match ul with
   | [] -> None
@@ -112,18 +112,27 @@ let get_name ul id = match get_name_opt ul id with
 
 let get_debts fgr ul name id = 
   let rec loop ul = 
-  match ul with
+    match ul with
     | [] -> ()
     | (id2, name, amn)::rest -> match find_arc fgr id2 id with
       | None -> loop rest 
       | Some (f, _) ->  Printf.printf "%s owes %.2f to %s\n" name f (get_name ul id); loop rest
   in loop ul
 
+let get_debts_csv fgr ul name id = 
+  let rec loop ul = 
+    match ul with
+    | [] -> ()
+    | (id2, name, amn)::rest -> match find_arc fgr id id2 with
+      | None -> loop rest 
+      | Some (f, _) ->  Printf.printf "%s owes %.2f to %s\n" (get_name ul id) f name ; loop rest
+  in loop ul
+
 let rec print_ul ul = match ul with
   | [] -> Printf.printf "\n"
   | (id, name, _)::rest -> (* Printf.printf "%d: %s (recorded: %s)\n" id (get_name ul id) name; *) print_ul rest
 
-let share_from_info info out_path = 
+let share_from_info info out_path csv = 
   (* Building graph from file and getting user_part as tshd *)
   match info with
   | (gr, ul) ->
@@ -136,20 +145,34 @@ let share_from_info info out_path =
     let ffgr = ford_fulkerson_f gr src_id snk_id in
 
     (* Filtering useless arcs *)
-    let final_gr = drop_threshold ffgr tshd in
+    Printf.printf "[debug] Dropping useless components, tshd: %.2f\n" tshd;
+    let final_gr = drop_threshold ffgr tshd in 
+    (* let final_gr = ffgr in *)
 
     (* Exporting final graph in .svg *)
     export_ff_f out_path final_gr;
 
-    (* Extracting data from graph *)
-    print_ul ul;
-    List.iter (fun (id, name, amn) -> 
-      if id < 2 then ()
-      else get_debts final_gr ul name id
-    ) ul
+    Printf.printf "==== RESULTS ====\n";
+
+    (* Extracting data from graph and printing results*)
+    if csv then (
+      print_ul ul;
+      List.iter (fun (id, name, amn) -> 
+          if id < 2 then ()
+          else get_debts_csv final_gr ul name id
+        ) ul
+    )
+    else (
+      print_ul ul;
+      List.iter (fun (id, name, amn) -> 
+          if id < 2 then ()
+          else get_debts final_gr ul name id
+        ) ul
+    )
+
 
 let share_from_file in_path out_path =
-  share_from_info (get_info_from_file in_path) out_path
+  share_from_info (get_info_from_file in_path) out_path false
 
 let share_from_csv in_path out_path =
-  share_from_info (get_info_from_csv in_path) out_path
+  share_from_info (get_info_from_csv in_path) out_path true

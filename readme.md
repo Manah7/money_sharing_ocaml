@@ -6,7 +6,7 @@ Working directory for the 4IR OCaml project. This project was carried out in the
 * Medium project (Money sharing): **done** (run `make share`)
 * Better project: 
   * Max-flow min-cost: **done** (see `find_path` in `fordfulkerson.ml`)
-  * Enhance the medium project: *work in progress* (CSV parsing + addition of repartition possibilities)
+  * Enhance the medium project: **done** (CSV parsing + addition of repartition possibilities, cf. [better_project.md](better_project.md))
 
 ## Medium project
 We have chosen to implement the money sharing project. The implementation has been carried out and the demonstrator takes as input a processing file: 
@@ -24,8 +24,11 @@ carol owes 10.00 to alice
 ```
 The program also displays some useful information to verify the correct functioning of the program (in simple cases). 
 
+## Better Project
+See [better_project.md](better_project.md).
+
 ## Quick start
-### Fordfulkerson demo
+### Fordfulkerson demo (Minimal acceptable project)
 ```
 git clone https://github.com/Manah7/projet_ocaml
 cd projet_ocaml
@@ -33,7 +36,7 @@ make image
 eog image.svg
 ```
 
-### Money sharing demo
+### Money sharing demo (Medium project)
 ```
 git clone https://github.com/Manah7/projet_ocaml
 cd projet_ocaml
@@ -41,11 +44,23 @@ make share
 eog image.svg
 ```
 
+### CSV parsing & weighted value (Better project)
+```
+git clone https://github.com/Manah7/projet_ocaml
+cd projet_ocaml
+make csvtest
+```
+
 ## Makefile
 ```
 make build  # build the project
-make image  # build and run a demo, saved as image.svg
-make share  # build and run money sharing demo using FF. algo.
+
+make image   # build and run a demo, saved as image.svg
+make share   # build and run money sharing demo using FF. algo.
+make csvtest # build and run CSV parsing demo
+
+make clean 
+make float  # Used for debug
 ```
 
 ## About
