@@ -22,14 +22,6 @@ let rec sum_amount ul = match ul with
   | [] -> 0.0
   | (_, _, a)::rest -> a +. (sum_amount rest)
 
-(* Add every possible outgoing arc from one given node with label lbl *)
-let add_all_arcs_from_node gr id lbl = 
-  n_fold gr (fun tgr id2 -> if id != id2 then new_arc tgr id id2 lbl else tgr) gr
-
-(* Make a given graph complete by adding all possible outgoing arcs for every node *)
-let complete_graph gr lbl = 
-  n_fold gr (fun tgr id -> add_all_arcs_from_node tgr id lbl) gr
-
 
 (* Based on from_file() (gfile.ml) *)
 let rec get_info_from_file path = 

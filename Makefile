@@ -50,6 +50,16 @@ share:
 	@echo "\nCreated image."
 	dot -Tsvg outfile > image.svg
 
+csvtest:
+	@echo "\n==== COMPILING ====\n"
+	ocamlbuild csvtest.native
+
+	@echo "\n==== EXECUTING ====\n"
+	./csvtest.native example.csv outfile
+
+	@echo "\nCreated image."
+	dot -Tsvg outfile > image.svg
+
 clean:
 	-rm -rf _build/
 	-rm ftest.native

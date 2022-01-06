@@ -22,10 +22,19 @@ let csv_error str =
   Printf.eprintf "\nCSV error: %s\n %s\n" str stack;
   failwith "Exiting"
 
+(* Add every possible outgoing arc from one given node with label lbl *)
+let add_all_arcs_from_node gr id lbl = 
+  n_fold gr (fun tgr id2 -> if id != id2 then new_arc tgr id id2 lbl else tgr) gr
+
+(* Make a given graph complete by adding all possible outgoing arcs for every node *)
+let complete_graph gr lbl = 
+  n_fold gr (fun tgr id -> add_all_arcs_from_node tgr id lbl) gr
+
 (* (id * name * amount) list -> name -> id option *)
 let rec get_id_from_name ul name = match ul with
   | [] -> None
-  | (id, n, _)::rest -> if n = name then Some id else get_id_from_name rest name
+  | (id, n, _)::rest -> Printf.printf "[debug] Searching %s: Found %s (id: %d) \n" name n id;
+    if n = name then Some id else get_id_from_name rest name
 
 (* Return a new list with updated amount for one given id *)
 let rec add_amount_to_id ul id a = 
@@ -35,10 +44,16 @@ let rec add_amount_to_id ul id a =
 (* Return the number of part in a line *)
 let rec get_total_part = function
   | [] -> 0
-  | s::r -> if s = "" then get_total_part r else (int_of_string s)+(get_total_part r)
+  | s::r -> Printf.printf "[debug] Calculing total part, found: %s \n" (String.trim s);
+    if s = " " || s = "" then get_total_part r else (int_of_string (String.trim s))+(get_total_part r)
 
+let rec create_graph_from_ul = function
+  | [] -> empty_graph
+  | (id, _, _)::rest -> new_node (create_graph_from_ul rest) id
 
-
+let rec print_ul = function
+  | [] -> Printf.printf "[ul] Done.\n"
+  | (id, name, a)::rest -> Printf.printf "[ul] id: %d, name: %s, a: %.2f\n" id name a; print_ul rest
 
 let rec get_info_from_csv path = 
   let infile = open_in path in
@@ -55,7 +70,7 @@ let rec get_info_from_csv path =
       | whopaid::howmuch::name_list -> 
         let rec extract_name id = function
           | [] -> []
-          | name::rest -> (id, name, 0.0)::(extract_name (id+1) rest)
+          | name::rest -> (id, (String.trim name), 0.0)::(extract_name (id+1) rest)
         in
         extract_name 2 name_list
       | _ -> csv_error "Invalid CSV file (first line parsing)."
@@ -75,19 +90,22 @@ let rec get_info_from_csv path =
 
           (* First two rows analysis - Adding amount to payer *)
           let ul2 = add_amount_to_id ul (match get_id_from_name ul payer with
-              | None -> Printf.printf "Unknow payer in list (%s), skipping..." payer; csv_error "TODO"
+              | None -> Printf.printf "Unknow payer in list (%s for %s), skipping..." payer s_amount; csv_error "TODO"
               | Some id -> id) (float_of_string s_amount) in
 
           (* Rest of the line analysis - Removing amount to other participants *)
           let nb_part = get_total_part rest in
           let part = (float_of_string s_amount) /. (float_of_int nb_part) in
 
+          Printf.printf "[debug] Get total amount: %s \n" s_amount;
+          Printf.printf "[debug] Calculed user part: %.2f \n" part;
+
           let rec loop_participants ul3 coef_line id = match coef_line with
             | [] -> ul3
-            | ""::r -> loop_participants ul3 r (id+1)
             (* Si la case coef. n'est pas vide, on enlève part*coef. à l'user *)
-            | c::r -> loop_participants (
-                add_amount_to_id ul3 id (0.0-.((float_of_int (int_of_string c))*.part))
+            | c::r -> if c = "" || c = " " then loop_participants ul3 r (id+1) else
+              loop_participants (
+                add_amount_to_id ul3 id (0.0-.((float_of_int (int_of_string (String.trim c)))*.part))
               ) r (id+1)
           in
 
@@ -105,11 +123,25 @@ let rec get_info_from_csv path =
 
   let ul_with_amount = loop ul in
 
-  (empty_graph, ul_with_amount)
+  print_ul ul_with_amount;
 
-  (* TODO : parse ul and add mssing arcs *)
+  (* Creating a graph, adding a node per user and complete the graph *)
+  let graph = complete_graph (create_graph_from_ul ul_with_amount) Float.infinity in
 
-(**********************************************)
+  (* Add source and sink nodes *)
+  let src_id = 0 in
+  let snk_id = 1 in
+  let fgr = new_node (new_node graph src_id) snk_id in
+
+  (* Looping on user list to add outward arcs *)
+  let rec ul_loop gr ul n = match ul with
+    | [] -> gr
+    | (_, name, a)::rest -> 
+      if a > 0.0 then ul_loop (new_arc gr n snk_id a) rest (n-1)
+      else ul_loop (new_arc gr src_id n (0.0 -. a)) rest (n-1)
+  in 
+  
+  (ul_loop fgr ul_with_amount ((List.length ul_with_amount)+1), ul_with_amount)
 
 
 (**
